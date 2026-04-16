@@ -1,14 +1,25 @@
 # pmguard
 
-> Use the right package manager. Always.
+You've done it. We've all done it.
 
-pmguard intercepts `npm`, `pnpm`, `yarn`, and `bun` commands and warns (or silently redirects) if you're using the wrong one for the current project — detected from lockfiles and the `packageManager` field in `package.json`.
+```
+$ pnpm install
+...
+Lockfile is up to date, resolution step is skipped
+...
+```
 
-No new commands to learn. Just add one line to your shell config.
+Then you look up and realize — *this is a bun project.*
+
+Now you've got a `pnpm-lock.yaml` sitting in a repo that's never seen pnpm in its life. Your teammates are confused. Your CI is broken. Your lockfile is cooked.
+
+**pmguard stops you before that happens.**
 
 ---
 
-## How it works
+## What it does
+
+It wraps `npm`, `pnpm`, `yarn`, and `bun` in your shell. Same commands you always type — but if you're in the wrong project, it either warns you or silently runs the right one instead.
 
 ```
 $ cd my-bun-project
@@ -18,83 +29,77 @@ $ pnpm install
    Run: bun install
 ```
 
-Or in redirect mode:
+Or if you're a "just fix it for me" type:
 
 ```
 $ pnpm install
 ⚡ pmguard: redirecting pnpm → bun
 ```
 
+Zero new commands. Zero new habits. Just add one line to your shell and forget about it.
+
 ---
 
 ## Install
 
-**Mac (Homebrew):**
-
+**Mac:**
 ```bash
-brew install istorry/pmguard/pmguard
+brew install iStorry/pmguard/pmguard
 ```
 
 **Linux / Mac without Homebrew:**
-
 ```bash
-curl -sSL https://raw.githubusercontent.com/istorry/pmguard/main/scripts/install.sh | sh
+curl -sSL https://raw.githubusercontent.com/iStorry/pmguard/main/scripts/install.sh | sh
 ```
 
 **Windows:**
 
-Download the latest binary from [GitHub Releases](https://github.com/istorry/pmguard/releases) and add it to your PATH.
+Grab the latest binary from [Releases](https://github.com/iStorry/pmguard/releases) and add it to your PATH.
 
-**Activate in your shell:**
-
-Add this to your `~/.zshrc` or `~/.bashrc`:
+**Then activate it:**
 
 ```bash
+# Add to your ~/.zshrc or ~/.bashrc
 eval "$(pmguard install-hooks)"
 ```
 
-Then restart your shell or run `source ~/.zshrc`. That's it.
+Restart your shell and you're done. Seriously, that's it.
 
 ---
 
-## Configuration
+## Modes
 
 ```bash
-# Default: warn and stop when wrong PM is used
-pmguard config set-mode warn
-
-# Silently redirect to the correct PM
-pmguard config set-mode redirect
-
-# View current config
-pmguard config get
+pmguard config set-mode warn      # yell at me but don't do anything (default)
+pmguard config set-mode redirect  # just fix it silently
+pmguard config get                # what mode am I in?
 ```
 
-Config is stored at `~/.config/pmguard/config.yaml`.
+Config lives at `~/.config/pmguard/config.yaml`.
 
 ---
 
-## Detection priority
+## How it detects your package manager
 
-pmguard walks up from your current directory looking for:
+It walks up your directory tree looking for a lockfile:
 
-1. A lockfile:
-   - `bun.lockb` / `bun.lock` → bun
-   - `pnpm-lock.yaml` → pnpm
-   - `yarn.lock` → yarn
-   - `package-lock.json` → npm
-2. `packageManager` field in `package.json` (e.g. `"packageManager": "bun@1.0.0"`)
+| Lockfile | Package manager |
+|----------|----------------|
+| `bun.lockb` / `bun.lock` | bun |
+| `pnpm-lock.yaml` | pnpm |
+| `yarn.lock` | yarn |
+| `package-lock.json` | npm |
 
-If nothing is found, the command passes through transparently — pmguard stays out of your way.
+No lockfile? It also checks the `packageManager` field in `package.json`. Nothing found at all? It gets out of your way and passes the command through untouched.
 
 ---
 
-## Arg remapping (redirect mode)
+## Redirect mode flag translation
 
-When redirecting, pmguard translates flags between package managers where they differ:
+When redirecting, pmguard translates flags so the command actually works:
 
-| From | To | Original | Translated |
-|------|----|----------|------------|
+| From | To | Original | Becomes |
+|------|----|----------|---------|
 | pnpm | bun | `-D` | `-d` |
 | npm | bun | `--save-dev` | `-d` |
 | bun | pnpm | `-d` | `-D` |
@@ -104,26 +109,26 @@ When redirecting, pmguard translates flags between package managers where they d
 
 ## Uninstall
 
-Remove the `eval "$(pmguard install-hooks)"` line from your shell config, then:
-
 ```bash
 # Homebrew
 brew uninstall pmguard
 
-# Manual install
+# Manual
 rm /usr/local/bin/pmguard
 ```
+
+And remove the `eval "$(pmguard install-hooks)"` line from your shell config.
 
 ---
 
 ## Contributing
 
-PRs welcome! Key areas to improve:
+This is a small focused tool and PRs are very welcome. Good places to start:
 
 - More flag translations in `internal/remap/remap.go`
-- Fish shell hook support
-- PowerShell hook support
-- Per-project config override (`.pmguard.yaml`)
+- Fish shell support
+- PowerShell support
+- Per-project config via `.pmguard.yaml`
 
 ---
 
