@@ -1,0 +1,51 @@
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    binary: pmguard
+
+archives:
+  - format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
+    format_overrides:
+      - goos: windows
+        format: zip
+
+checksum:
+  name_template: "checksums.txt"
+
+brews:
+  - repository:
+      owner: istorry
+      name: homebrew-pmguard
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    homepage: "https://github.com/istorry/pmguard"
+    description: "Use the right package manager, automatically"
+    license: "MIT"
+    install: |
+      bin.install "pmguard"
+    test: |
+      system "#{bin}/pmguard --help"
+    post_install: |
+      ohai "Run this to activate pmguard in your shell:"
+      ohai "  echo 'eval \"$(pmguard install-hooks)\"' >> ~/.zshrc && source ~/.zshrc"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
