@@ -7,9 +7,9 @@ import "github.com/istorry/pmguard/internal/detect"
 var flagMap = map[detect.PackageManager]map[detect.PackageManager]map[string]string{
 	detect.Pnpm: {
 		detect.Bun: {
-			"-D": "-d",
+			"-D":         "-d",
 			"--save-dev": "-d",
-			"-g": "-g",
+			"-g":         "-g",
 		},
 		detect.Yarn: {
 			"-D": "-D",
@@ -23,21 +23,21 @@ var flagMap = map[detect.PackageManager]map[detect.PackageManager]map[string]str
 	detect.Npm: {
 		detect.Bun: {
 			"--save-dev": "-d",
-			"-D": "-d",
-			"-g": "-g",
+			"-D":         "-d",
+			"-g":         "-g",
 		},
 		detect.Pnpm: {
 			"--save-dev": "-D",
-			"-D": "-D",
+			"-D":         "-D",
 		},
 	},
 	detect.Yarn: {
 		detect.Bun: {
-			"-D": "-d",
+			"-D":    "-d",
 			"--dev": "-d",
 		},
 		detect.Pnpm: {
-			"-D": "-D",
+			"-D":    "-D",
 			"--dev": "-D",
 		},
 	},

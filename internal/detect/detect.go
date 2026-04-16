@@ -9,19 +9,19 @@ import (
 type PackageManager string
 
 const (
-	Bun  PackageManager = "bun"
-	Pnpm PackageManager = "pnpm"
-	Yarn PackageManager = "yarn"
-	Npm  PackageManager = "npm"
+	Bun     PackageManager = "bun"
+	Pnpm    PackageManager = "pnpm"
+	Yarn    PackageManager = "yarn"
+	Npm     PackageManager = "npm"
 	Unknown PackageManager = ""
 )
 
 // lockfiles maps lockfile names to their package managers
 var lockfiles = map[string]PackageManager{
-	"bun.lockb":        Bun,
-	"bun.lock":         Bun,
-	"pnpm-lock.yaml":   Pnpm,
-	"yarn.lock":        Yarn,
+	"bun.lockb":         Bun,
+	"bun.lock":          Bun,
+	"pnpm-lock.yaml":    Pnpm,
+	"yarn.lock":         Yarn,
 	"package-lock.json": Npm,
 }
 
