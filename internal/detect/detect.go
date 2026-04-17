@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type PackageManager string
@@ -72,9 +73,10 @@ func fromPackageJSON(dir string) PackageManager {
 		return Unknown
 	}
 
-	// packageManager field looks like "bun@1.0.0" or just "bun"
+	// packageManager field looks like "pnpm@9.0.0" or just "pnpm"
+	name := strings.SplitN(pkg.PackageManager, "@", 2)[0]
 	for _, pm := range []PackageManager{Bun, Pnpm, Yarn, Npm} {
-		if len(pkg.PackageManager) >= len(pm) && pkg.PackageManager[:len(pm)] == string(pm) {
+		if name == string(pm) {
 			return pm
 		}
 	}

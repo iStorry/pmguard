@@ -37,21 +37,21 @@ func Load() (Config, error) {
 		return Default, nil
 	}
 
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath(dir)
+	v := viper.New()
+	v.SetConfigName("config")
+	v.SetConfigType("yaml")
+	v.AddConfigPath(dir)
+	v.SetDefault("mode", string(ModeWarn))
 
-	viper.SetDefault("mode", string(ModeWarn))
-
-	if err := viper.ReadInConfig(); err != nil {
+	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			return Default, nil // no config yet, use defaults
+			return Default, nil
 		}
 		return Default, err
 	}
 
 	var cfg Config
-	if err := viper.Unmarshal(&cfg); err != nil {
+	if err := v.Unmarshal(&cfg); err != nil {
 		return Default, err
 	}
 	return cfg, nil

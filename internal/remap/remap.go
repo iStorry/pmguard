@@ -1,6 +1,10 @@
 package remap
 
-import "github.com/istorry/pmguard/internal/detect"
+import (
+	"strings"
+
+	"github.com/istorry/pmguard/internal/detect"
+)
 
 // flagMap translates flags from one PM to another.
 // Key: [fromPM][toPM][originalFlag] = translatedFlag
@@ -85,21 +89,21 @@ func RemapArgs(from, to detect.PackageManager, args []string) []string {
 
 	result := make([]string, 0, len(args))
 
-	// Translate subcommand (first arg)
+	// Translate subcommand (first arg); mapped value may be multi-word (e.g. "install --frozen-lockfile")
 	subcommand := args[0]
 	if subs, ok := subcommandMap[from][to]; ok {
 		if mapped, ok := subs[subcommand]; ok {
 			subcommand = mapped
 		}
 	}
-	result = append(result, subcommand)
+	result = append(result, strings.Fields(subcommand)...)
 
-	// Translate remaining flags
+	// Translate remaining flags; mapped value may be multi-word (e.g. "global add")
 	flags, ok := flagMap[from][to]
 	for _, arg := range args[1:] {
 		if ok {
 			if mapped, exists := flags[arg]; exists {
-				result = append(result, mapped)
+				result = append(result, strings.Fields(mapped)...)
 				continue
 			}
 		}

@@ -24,9 +24,10 @@ Add this to your shell config to activate:
 
 // guardCmd is the core: called by shell hooks as e.g. "pmguard guard pnpm install"
 var guardCmd = &cobra.Command{
-	Use:   "guard <invoked-pm> [args...]",
-	Short: "Check and optionally redirect a package manager command",
-	Args:  cobra.MinimumNArgs(1),
+	Use:                "guard <invoked-pm> [args...]",
+	Short:              "Check and optionally redirect a package manager command",
+	Args:               cobra.MinimumNArgs(1),
+	DisableFlagParsing: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		invokedPM := detect.PackageManager(args[0])
 		pmArgs := args[1:]
